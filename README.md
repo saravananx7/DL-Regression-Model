@@ -44,28 +44,113 @@ Use the trained model to predict  for a new input value .
 
 ### Register Number:
 
-```python
+```
+python
+
 class Model(nn.Module):
     def __init__(self, in_features, out_features):
         super().__init__()
-        #Include your code here
+        import torch
+import torch.nn as nn
+import numpy as np
+import matplotlib.pyplot as plt
+%matplotlib inline
+
+torch.manual_seed(71)
+X = torch.linspace(1, 50, 50).reshape(-1, 1)
+e = torch.randint(-8, 9, (50, 1), dtype=torch.float)
+y = 2 * X + 1 + e
+
+plt.scatter(X, y)
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Generated Dataset')
+plt.show()
+
+class Model(nn.Module):
+    def __init__(self, in_features, out_features):
+        super().__init__()
+        self.linear = nn.Linear(in_features, out_features)
+
+    def forward(self, x):
+        return self.linear(x)
+
+torch.manual_seed(59)
+model = Model(1, 1)
+criterion = nn.MSELoss()
+optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
+
+epochs = 50
+losses = []
+
+for epoch in range(epochs):
+    y_pred = model(X)
+    loss = criterion(y_pred, y)
+
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+    losses.append(loss.item())
+
+    print(f"Epoch {epoch+1}: Loss={loss.item():.4f}, "
+          f"Weight={model.linear.weight.item():.4f}, "
+          f"Bias={model.linear.bias.item():.4f}")
+
+plt.plot(range(1, epochs+1), losses)
+plt.xlabel('Epoch')
+plt.ylabel('MSE Loss')
+plt.title('Training Loss vs Epoch')
+plt.show()
+
+x_line = np.linspace(0, 50, 50)
+current_weight = model.linear.weight.item()
+current_bias = model.linear.bias.item()
+y_line = current_weight * x_line + current_bias
+
+plt.scatter(X, y, label='Original Data')
+plt.plot(x_line, y_line, 'r', label='Best Fit Line')
+plt.xlabel('x')
+plt.ylabel('y')
+plt.legend()
+plt.show()
+
+new_input = torch.tensor([[60.0]])
+prediction = model(new_input)
+
+print("\nSample Input:", new_input.item())
+print("Predicted Output:", prediction.item())
 
 
 
 # Initialize the Model, Loss Function, and Optimizer
 
+torch.manual_seed(59)
+model = Model(1, 1)
+criterion = nn.MSELoss()
+optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
+
+
+
+
+
 ```
 
 ### Dataset Information
-Include screenshot of the generated data
+<img width="785" height="290" alt="image" src="https://github.com/user-attachments/assets/9ea15405-ad70-4194-9897-8d02af4d9be6" />
 
 ### OUTPUT
 Training Loss Vs Iteration Plot
+<img width="747" height="540" alt="image" src="https://github.com/user-attachments/assets/674f6491-2f16-4ce4-a42e-a1640231f197" />
+
 Best Fit line plot
+<img width="832" height="558" alt="image" src="https://github.com/user-attachments/assets/797c1cdd-db79-45d9-a85e-e2ee6580a462" />
+
 Include your plot here
+<img width="852" height="565" alt="image" src="https://github.com/user-attachments/assets/3674bc2f-04a7-4c1f-920b-40c3705c7920" />
 
 ### New Sample Data Prediction
 Include your sample input and output here
-
+<img width="785" height="290" alt="image" src="https://github.com/user-attachments/assets/9ea15405-ad70-4194-9897-8d02af4d9be6" />
 ## RESULT
 Thus, a neural network regression model was successfully developed and trained using PyTorch.
